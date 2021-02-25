@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-karatehelper-dev-145603-authRole",
+      "UnauthRoleArn": "arn:aws:iam::502723196350:role/amplify-karatehelper-dev-145603-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::502723196350:role/amplify-karatehelper-dev-145603-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-karatehelper-dev-145603-deployment",
+      "UnauthRoleName": "amplify-karatehelper-dev-145603-unauthRole",
+      "StackName": "amplify-karatehelper-dev-145603",
+      "StackId": "arn:aws:cloudformation:us-east-2:502723196350:stack/amplify-karatehelper-dev-145603/8a50c2e0-7736-11eb-bbdc-025c5e287830",
+      "AmplifyAppId": "d1pfv6wa0jxe0k"
+    }
+  }
+}
