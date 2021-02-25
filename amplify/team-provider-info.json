@@ -10,6 +10,11 @@
       "StackName": "amplify-karatehelper-dev-145603",
       "StackId": "arn:aws:cloudformation:us-east-2:502723196350:stack/amplify-karatehelper-dev-145603/8a50c2e0-7736-11eb-bbdc-025c5e287830",
       "AmplifyAppId": "d1pfv6wa0jxe0k"
+    },
+    "categories": {
+      "auth": {
+        "karatehelperbfbea89a": {}
+      }
     }
   }
 }
