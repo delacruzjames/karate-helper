@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import awsConfig from "./aws-exports";
 import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
@@ -39,33 +39,24 @@ function listReducer(state = initialState, action) {
 
 function App() {
   const [state, dispatch] = useReducer(listReducer, initialState);
-  const [lists, setLists] = useState([]);
-  const [newList, setNewList] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   async function fetchList() {
     const { data } = await API.graphql(graphqlOperation(listLists));
-    setLists(data.listLists.items);
-    console.log(data);
+    dispatch({ type: "UPDATE_LISTS", value: data.listLists.items });
   }
+
   useEffect(() => {
     fetchList();
   }, []);
 
   useEffect(() => {
     let subscription = API.graphql(graphqlOperation(onCreateList)).subscribe({
-      next: ({ provide, value }) => addTotList(value),
+      next: ({ provide, value }) => {
+        dispatch({ type: "UPDATE_LISTS", value: [value.data.onCreateList] });
+      },
     });
+
+    return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (newList !== "") {
-      setLists([newList, ...lists]);
-    }
-  }, [newList]);
-
-  function addTotList({ data }) {
-    setNewList(data.onCreateList);
-  }
 
   async function saveList() {
     const { title, description } = state;
@@ -88,7 +79,7 @@ function App() {
         </Button>
         <div className="App">
           <MainHeader />
-          <Lists lists={lists} />
+          <Lists lists={state.lists} />
         </div>
       </Container>
       <Modal open={state.isModalOpen} dimmer={"blurring"}>
