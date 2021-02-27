@@ -7,6 +7,7 @@ import { listLists } from "./graphql/queries";
 import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
+import { createList } from "./graphql/mutations";
 import { Button, Container, Icon, Modal, Form } from "semantic-ui-react";
 Amplify.configure(awsConfig);
 
@@ -30,7 +31,7 @@ function listReducer(state = initialState, action) {
 function App() {
   const [state, dispatch] = useReducer(listReducer, initialState);
   const [lists, setLists] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   async function fetchList() {
     const { data } = await API.graphql(graphqlOperation(listLists));
     setLists(data.listLists.items);
@@ -43,6 +44,16 @@ function App() {
   function toggleModal(action) {
     setIsModalOpen(action);
   }
+
+  async function saveList() {
+    const { title, description } = state;
+    const results = await API.graphql(
+      graphqlOperation(createList, { input: { title, description } })
+    );
+    toggleModal(false);
+    console.log("Save data with result", results);
+  }
+
   return (
     <AmplifyAuthenticator>
       <Container style={{ height: "100vh" }}>
@@ -85,7 +96,7 @@ function App() {
           <Button negative onClick={() => toggleModal(false)}>
             Cancel
           </Button>
-          <Button positive onClick={() => toggleModal(false)}>
+          <Button positive onClick={saveList}>
             Save
           </Button>
         </Modal.Actions>
