@@ -7,7 +7,7 @@ import { listLists } from "./graphql/queries";
 import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
-import { Container } from "semantic-ui-react";
+import { Button, Container, Icon } from "semantic-ui-react";
 Amplify.configure(awsConfig);
 
 function App() {
@@ -23,6 +23,9 @@ function App() {
   return (
     <AmplifyAuthenticator>
       <AmplifySignOut />
+      <Button className="floatingButton">
+        <Icon name="plus" className="floatingButton_icon"></Icon>
+      </Button>
       <Container>
         <div className="App">
           <MainHeader />
