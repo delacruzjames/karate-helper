@@ -1,13 +1,17 @@
 import React from "react";
+import { Item } from "semantic-ui-react";
+import List from "./List";
 
 function Lists({ lists }) {
   return (
     <div>
-      <ul>
+      <Item.Group>
         {lists.map((item) => (
-          <li key={item.id}>{item.title}</li>
+          <List key={item.id} {...item}>
+            {item.title}
+          </List>
         ))}
-      </ul>
+      </Item.Group>
     </div>
   );
 }
