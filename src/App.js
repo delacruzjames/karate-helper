@@ -7,7 +7,7 @@ import { listLists } from "./graphql/queries";
 import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
-import { createList } from "./graphql/mutations";
+import { createList, deleteList } from "./graphql/mutations";
 import { onCreateList } from "./graphql/subscriptions";
 import { Button, Container, Icon, Modal, Form } from "semantic-ui-react";
 Amplify.configure(awsConfig);
@@ -31,10 +31,19 @@ function listReducer(state = initialState, action) {
       return { ...state, isModalOpen: true };
     case "CLOSE_MODAL":
       return { ...state, isModalOpen: false, title: "", description: "" };
+    case "DELETE_LIST":
+      deleteListById(action.value);
+      return { ...state };
     default:
       console.log("Default action for:", action);
       return state;
   }
+}
+
+async function deleteListById(id) {
+  const result = await API.graphql(
+    graphqlOperation(deleteList, { input: { id: id } })
+  );
 }
 
 function App() {
@@ -43,7 +52,6 @@ function App() {
     const { data } = await API.graphql(graphqlOperation(listLists));
     dispatch({ type: "UPDATE_LISTS", value: data.listLists.items });
   }
-
   useEffect(() => {
     fetchList();
   }, []);
@@ -79,7 +87,7 @@ function App() {
         </Button>
         <div className="App">
           <MainHeader />
-          <Lists lists={state.lists} />
+          <Lists lists={state.lists} dispatch={dispatch} />
         </div>
       </Container>
       <Modal open={state.isModalOpen} dimmer={"blurring"}>
