@@ -10,7 +10,7 @@ function List({ title, description, createdAt }) {
       />
       <Item.Content>
         <Item.Header>{title}</Item.Header>
-        <Item.Description>{title}</Item.Description>
+        <Item.Description>{description}</Item.Description>
         <Item.Extra>{new Date(createdAt).toDateString()}</Item.Extra>
       </Item.Content>
     </Item>
