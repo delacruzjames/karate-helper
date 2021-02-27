@@ -8,7 +8,7 @@ import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
 import { createList, deleteList } from "./graphql/mutations";
-import { onCreateList } from "./graphql/subscriptions";
+import { onCreateList, onDeleteList } from "./graphql/subscriptions";
 import { Button, Container, Icon, Modal, Form } from "semantic-ui-react";
 Amplify.configure(awsConfig);
 
@@ -34,6 +34,9 @@ function listReducer(state = initialState, action) {
     case "DELETE_LIST":
       deleteListById(action.value);
       return { ...state };
+    case "DELETE_LIST_RESULT":
+      const newLists = state.lists.filter((item) => item.id !== action.value);
+      return { ...state, lists: newLists };
     default:
       console.log("Default action for:", action);
       return state;
@@ -44,6 +47,7 @@ async function deleteListById(id) {
   const result = await API.graphql(
     graphqlOperation(deleteList, { input: { id: id } })
   );
+  console.log("Deleted list", result);
 }
 
 function App() {
@@ -57,13 +61,29 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let subscription = API.graphql(graphqlOperation(onCreateList)).subscribe({
+    let createListSubscription = API.graphql(
+      graphqlOperation(onCreateList)
+    ).subscribe({
       next: ({ provide, value }) => {
         dispatch({ type: "UPDATE_LISTS", value: [value.data.onCreateList] });
       },
     });
 
-    return () => subscription.unsubscribe();
+    let deleteListSubscription = API.graphql(
+      graphqlOperation(onDeleteList)
+    ).subscribe({
+      next: ({ provide, value }) => {
+        dispatch({
+          type: "DELETE_LIST_RESULT",
+          value: value.data.onDeleteList.id,
+        });
+      },
+    });
+
+    return () => {
+      createListSubscription.unsubscribe();
+      deleteListSubscription.unsubscribe();
+    };
   }, []);
 
   async function saveList() {
