@@ -8,6 +8,7 @@ import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
 import { createList } from "./graphql/mutations";
+import { onCreateList } from "./graphql/subscriptions";
 import { Button, Container, Icon, Modal, Form } from "semantic-ui-react";
 Amplify.configure(awsConfig);
 
@@ -31,6 +32,7 @@ function listReducer(state = initialState, action) {
 function App() {
   const [state, dispatch] = useReducer(listReducer, initialState);
   const [lists, setLists] = useState([]);
+  const [newList, setNewList] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   async function fetchList() {
     const { data } = await API.graphql(graphqlOperation(listLists));
@@ -41,6 +43,21 @@ function App() {
     fetchList();
   }, []);
 
+  useEffect(() => {
+    let subscription = API.graphql(graphqlOperation(onCreateList)).subscribe({
+      next: ({ provide, value }) => addTotList(value),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (newList !== "") {
+      setLists([newList, ...lists]);
+    }
+  }, [newList]);
+
+  function addTotList({ data }) {
+    setNewList(data.onCreateList);
+  }
   function toggleModal(action) {
     setIsModalOpen(action);
   }
