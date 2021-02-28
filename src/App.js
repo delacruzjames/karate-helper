@@ -7,8 +7,12 @@ import { listLists } from "./graphql/queries";
 import "semantic-ui-css/semantic.min.css";
 import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
-import { createList, deleteList } from "./graphql/mutations";
-import { onCreateList, onDeleteList } from "./graphql/subscriptions";
+import { deleteList } from "./graphql/mutations";
+import {
+  onCreateList,
+  onDeleteList,
+  onUpdateList,
+} from "./graphql/subscriptions";
 import { Button, Container, Icon } from "semantic-ui-react";
 import ListModal from "./components/modals/ListModal";
 Amplify.configure(awsConfig);
@@ -83,18 +87,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let createListSubscription = API.graphql(
+    const createListSubscription = API.graphql(
       graphqlOperation(onCreateList)
     ).subscribe({
       next: ({ provide, value }) => {
+        console.log("onCreateList called");
         dispatch({ type: "UPDATE_LISTS", value: [value.data.onCreateList] });
       },
     });
 
-    let deleteListSubscription = API.graphql(
+    const deleteListSubscription = API.graphql(
       graphqlOperation(onDeleteList)
     ).subscribe({
       next: ({ provide, value }) => {
+        console.log("onDeleteList called");
         dispatch({
           type: "DELETE_LIST_RESULT",
           value: value.data.onDeleteList.id,
@@ -102,9 +108,22 @@ function App() {
       },
     });
 
+    const updateListSubscription = API.graphql(
+      graphqlOperation(onUpdateList)
+    ).subscribe({
+      next: ({ provide, value }) => {
+        console.log("onUpdateList called");
+        dispatch({
+          type: "UPDATE_LISTS_RESULT",
+          value: [value.data.onUpdateList],
+        });
+      },
+    });
+
     return () => {
       createListSubscription.unsubscribe();
       deleteListSubscription.unsubscribe();
+      updateListSubscription.unsubscribe();
     };
   }, []);
 

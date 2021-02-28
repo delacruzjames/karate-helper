@@ -2,7 +2,7 @@ import React from "react";
 import { Icon, Item } from "semantic-ui-react";
 
 function List(props) {
-  const { id, title, description, createdAt, dispatch } = props;
+  const { title, description, createdAt, dispatch } = props;
   return (
     <Item>
       <Item.Image
