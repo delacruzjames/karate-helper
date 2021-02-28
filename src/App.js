@@ -15,6 +15,7 @@ import {
 } from "./graphql/subscriptions";
 import { Button, Container, Icon } from "semantic-ui-react";
 import ListModal from "./components/modals/ListModal";
+import UploadImages from "./components/handleImages/UploadImages";
 Amplify.configure(awsConfig);
 
 const initialState = {
@@ -152,6 +153,7 @@ function App() {
           <MainHeader />
           <Lists lists={state.lists} dispatch={dispatch} />
         </div>
+        <UploadImages />
       </Container>
       <ListModal state={state} dispatch={dispatch} />
     </AmplifyAuthenticator>

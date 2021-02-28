@@ -1,6 +1,6 @@
 {
     "identityPoolName": "karatehelperbfbea89a_identitypool_bfbea89a",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "karatebfbea89a",
     "userPoolName": "karatehelperbfbea89a_userpool_bfbea89a",
     "autoVerifiedAttributes": [

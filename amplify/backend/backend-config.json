@@ -23,5 +23,11 @@
         }
       }
     }
+  },
+  "storage": {
+    "karateHelperBucket": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }
