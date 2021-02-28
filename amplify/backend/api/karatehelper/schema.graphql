@@ -2,6 +2,7 @@ type List @model {
   id: ID
   title: String!
   description: String
+  imageKey: String
   listItems: [ListItem] @connection(name: "ListListItems")
 }
 
