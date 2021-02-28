@@ -20,6 +20,7 @@ function List(props) {
       return fetchImageUrl();
     }
     setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const content = <Loader />;
