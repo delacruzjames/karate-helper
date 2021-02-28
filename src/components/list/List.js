@@ -1,7 +1,8 @@
 import React from "react";
 import { Icon, Item } from "semantic-ui-react";
 
-function List({ id, title, description, createdAt, dispatch }) {
+function List(props) {
+  const { id, title, description, createdAt, dispatch } = props;
   return (
     <Item>
       <Item.Image
@@ -14,9 +15,13 @@ function List({ id, title, description, createdAt, dispatch }) {
         <Item.Extra>
           {new Date(createdAt).toDateString()}
           <Icon
-            name="trash"
+            name="edit"
             className="ml-3"
-            onClick={() => dispatch({ type: "DELETE_LIST", value: id })}
+            onClick={() => dispatch({ type: "EDIT_LIST", value: props })}
+          />
+          <Icon
+            name="trash"
+            onClick={() => dispatch({ type: "DELETE_LIST", value: props })}
           />
         </Item.Extra>
       </Item.Content>

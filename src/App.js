@@ -9,7 +9,8 @@ import MainHeader from "./components/headers/MainHeader";
 import Lists from "./components/list/Lists";
 import { createList, deleteList } from "./graphql/mutations";
 import { onCreateList, onDeleteList } from "./graphql/subscriptions";
-import { Button, Container, Icon, Modal, Form } from "semantic-ui-react";
+import { Button, Container, Icon } from "semantic-ui-react";
+import ListModal from "./components/modals/ListModal";
 Amplify.configure(awsConfig);
 
 const initialState = {
@@ -17,6 +18,7 @@ const initialState = {
   description: "",
   lists: [],
   isModalOpen: false,
+  modalType: "",
 };
 
 function listReducer(state = initialState, action) {
@@ -28,7 +30,7 @@ function listReducer(state = initialState, action) {
     case "UPDATE_LISTS":
       return { ...state, lists: [...action.value, ...state.lists] };
     case "OPEN_MODAL":
-      return { ...state, isModalOpen: true };
+      return { ...state, isModalOpen: true, modalType: "add" };
     case "CLOSE_MODAL":
       return { ...state, isModalOpen: false, title: "", description: "" };
     case "DELETE_LIST":
@@ -37,6 +39,18 @@ function listReducer(state = initialState, action) {
     case "DELETE_LIST_RESULT":
       const newLists = state.lists.filter((item) => item.id !== action.value);
       return { ...state, lists: newLists };
+    case "EDIT_LIST":
+      const newValue = { ...action.value };
+      delete newValue.children;
+      delete newValue.listItems;
+      delete newValue.dispatch;
+      return {
+        ...state,
+        isModalOpen: true,
+        modalType: "edit",
+        title: newValue.title,
+        description: newValue.description,
+      };
     default:
       console.log("Default action for:", action);
       return state;
@@ -110,41 +124,7 @@ function App() {
           <Lists lists={state.lists} dispatch={dispatch} />
         </div>
       </Container>
-      <Modal open={state.isModalOpen} dimmer={"blurring"}>
-        <Modal.Header>Create your list</Modal.Header>
-        <Modal.Content>
-          <Form>
-            <Form.Input
-              error={true ? false : { content: "Please add name to your list" }}
-              label="Title"
-              placeholder="Osu!"
-              value={state.title}
-              onChange={(event) =>
-                dispatch({ type: "TITLE_CHANGED", value: event.target.value })
-              }
-            />
-            <Form.TextArea
-              label="Description"
-              placeholder="Description . . ."
-              value={state.description}
-              onChange={(event) =>
-                dispatch({
-                  type: "DESCRIPTION_CHANGED",
-                  value: event.target.value,
-                })
-              }
-            />
-          </Form>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button negative onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
-            Cancel
-          </Button>
-          <Button positive onClick={saveList}>
-            Save
-          </Button>
-        </Modal.Actions>
-      </Modal>
+      <ListModal state={state} dispatch={dispatch} saveList={saveList} />
     </AmplifyAuthenticator>
   );
 }
