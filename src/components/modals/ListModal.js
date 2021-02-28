@@ -1,9 +1,14 @@
 import { API, graphqlOperation } from "aws-amplify";
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form } from "semantic-ui-react";
 import { createList, updateList } from "../../graphql/mutations";
+import UploadImages from "../handleImages/UploadImages";
+import useS3 from "../hooks/useS3";
 
 function ListModal({ state, dispatch }) {
+  const [uploadToS3] = useS3();
+  const [fileToUpload, setFileToUpload] = useState();
+
   async function patchList() {
     const { id, title, description } = state;
     const results = await API.graphql(
@@ -14,14 +19,19 @@ function ListModal({ state, dispatch }) {
   }
 
   async function saveList() {
+    const imageKey = uploadToS3(fileToUpload);
     const { title, description } = state;
     const results = await API.graphql(
-      graphqlOperation(createList, { input: { title, description } })
+      graphqlOperation(createList, { input: { title, description, imageKey } })
     );
     dispatch({ type: "CLOSE_MODAL" });
     console.log("Save data with result", results);
   }
 
+  function getSelectedFile(fileName) {
+    console.log("getFile");
+    setFileToUpload(fileName);
+  }
   return (
     <Modal open={state.isModalOpen} dimmer={"blurring"}>
       <Modal.Header>
@@ -50,6 +60,7 @@ function ListModal({ state, dispatch }) {
               })
             }
           />
+          <UploadImages getSelectedFile={getSelectedFile} />
         </Form>
       </Modal.Content>
       <Modal.Actions>

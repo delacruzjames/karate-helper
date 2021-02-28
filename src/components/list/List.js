@@ -1,14 +1,26 @@
-import React from "react";
+import { Storage } from "aws-amplify";
+import React, { useEffect, useState } from "react";
 import { Icon, Item } from "semantic-ui-react";
 
 function List(props) {
-  const { title, description, createdAt, dispatch } = props;
+  const { title, description, imageKey, createdAt, dispatch } = props;
+  const [imageUrl, setImageUrl] = useState(
+    "https://react.semantic-ui.com/images/wireframe/image.png"
+  );
+
+  async function fetchImageUrl() {
+    const imgUrl = await Storage.get(imageKey);
+    setImageUrl(imgUrl);
+  }
+
+  useEffect(() => {
+    if (imageKey) {
+      fetchImageUrl();
+    }
+  }, []);
   return (
     <Item>
-      <Item.Image
-        size="tiny"
-        src="https://react.semantic-ui.com/images/wireframe/image.png"
-      />
+      <Item.Image size="tiny" src={imageUrl} />
       <Item.Content>
         <Item.Header>{title}</Item.Header>
         <Item.Description>{description}</Item.Description>
