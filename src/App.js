@@ -27,6 +27,7 @@ const initialState = {
 };
 
 function listReducer(state = initialState, action) {
+  let newLists;
   switch (action.type) {
     case "DESCRIPTION_CHANGED":
       return { ...state, description: action.value };
@@ -34,6 +35,15 @@ function listReducer(state = initialState, action) {
       return { ...state, title: action.value };
     case "UPDATE_LISTS":
       return { ...state, lists: [...action.value, ...state.lists] };
+    case "UPDATE_LISTS_RESULT":
+      const index = state.lists.findIndex(
+        (item) => item.id === action.value.id
+      );
+      console.log("INDEX", index);
+      newLists = [...state.lists];
+      delete action.value.listItems;
+      newLists[index] = action.value;
+      return { ...state, lists: newLists };
     case "OPEN_MODAL":
       return { ...state, isModalOpen: true, modalType: "add" };
     case "CLOSE_MODAL":
@@ -48,7 +58,7 @@ function listReducer(state = initialState, action) {
       deleteListById(action.value.id);
       return { ...state };
     case "DELETE_LIST_RESULT":
-      const newLists = state.lists.filter((item) => item.id !== action.value);
+      newLists = state.lists.filter((item) => item.id !== action.value);
       return { ...state, lists: newLists };
     case "EDIT_LIST":
       const newValue = { ...action.value };
@@ -116,7 +126,7 @@ function App() {
         console.log("onUpdateList called");
         dispatch({
           type: "UPDATE_LISTS_RESULT",
-          value: [value.data.onUpdateList],
+          value: value.data.onUpdateList,
         });
       },
     });
