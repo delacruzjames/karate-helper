@@ -1,7 +1,27 @@
+import { API, graphqlOperation } from "aws-amplify";
 import React from "react";
 import { Button, Modal, Form } from "semantic-ui-react";
+import { createList, updateList } from "../../graphql/mutations";
 
-function ListModal({ state, dispatch, saveList }) {
+function ListModal({ state, dispatch }) {
+  async function patchList() {
+    const { id, title, description } = state;
+    const results = await API.graphql(
+      graphqlOperation(updateList, { input: { id, title, description } })
+    );
+    dispatch({ type: "CLOSE_MODAL" });
+    console.log("Edit data with result", results);
+  }
+
+  async function saveList() {
+    const { title, description } = state;
+    const results = await API.graphql(
+      graphqlOperation(createList, { input: { title, description } })
+    );
+    dispatch({ type: "CLOSE_MODAL" });
+    console.log("Save data with result", results);
+  }
+
   return (
     <Modal open={state.isModalOpen} dimmer={"blurring"}>
       <Modal.Header>
@@ -36,7 +56,10 @@ function ListModal({ state, dispatch, saveList }) {
         <Button negative onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
           Cancel
         </Button>
-        <Button positive onClick={{state.modalType === "add" ? saveList : saveList}}>
+        <Button
+          positive
+          onClick={state.modalType === "add" ? saveList : patchList}
+        >
           {state.modalType === "add" ? "Save" : "Update"}
         </Button>
       </Modal.Actions>

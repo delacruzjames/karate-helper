@@ -14,6 +14,7 @@ import ListModal from "./components/modals/ListModal";
 Amplify.configure(awsConfig);
 
 const initialState = {
+  id: "",
   title: "",
   description: "",
   lists: [],
@@ -32,7 +33,13 @@ function listReducer(state = initialState, action) {
     case "OPEN_MODAL":
       return { ...state, isModalOpen: true, modalType: "add" };
     case "CLOSE_MODAL":
-      return { ...state, isModalOpen: false, title: "", description: "" };
+      return {
+        ...state,
+        isModalOpen: false,
+        title: "",
+        description: "",
+        id: "",
+      };
     case "DELETE_LIST":
       deleteListById(action.value);
       return { ...state };
@@ -48,6 +55,7 @@ function listReducer(state = initialState, action) {
         ...state,
         isModalOpen: true,
         modalType: "edit",
+        id: newValue.id,
         title: newValue.title,
         description: newValue.description,
       };
@@ -100,15 +108,6 @@ function App() {
     };
   }, []);
 
-  async function saveList() {
-    const { title, description } = state;
-    const results = await API.graphql(
-      graphqlOperation(createList, { input: { title, description } })
-    );
-    dispatch({ type: "CLOSE_MODAL" });
-    console.log("Save data with result", results);
-  }
-
   return (
     <AmplifyAuthenticator>
       <Container style={{ height: "100vh" }}>
@@ -124,7 +123,7 @@ function App() {
           <Lists lists={state.lists} dispatch={dispatch} />
         </div>
       </Container>
-      <ListModal state={state} dispatch={dispatch} saveList={saveList} />
+      <ListModal state={state} dispatch={dispatch} />
     </AmplifyAuthenticator>
   );
 }
